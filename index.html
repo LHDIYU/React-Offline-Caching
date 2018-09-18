@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en" manifest="offline.manifest.php">
+<head>
+    <meta charset="UTF-8">
+    <title>APP</title>
+    <link rel="stylesheet" href="./css/global.css">
+    <script src="jquery.min.js"></script>
+    <script>
+        $(document).ready(function (){
+            function startWidthResources(resources, storeResources) {
+                try{
+                    insertScript(resources.js);
+                    APP.applicationController.start(resources,storeResources);
+
+                }catch(e) {
+                    console.log("我已用尽洪荒之力！");
+                }
+            }
+
+
+            function startWithOnlineResources(resources) {
+                startWidthResources(resources, true);
+            }
+
+            function startWithOfflineResources() {
+                if(localStorage && localStorage.resources) {
+                    var resources = JSON.parse(localStorage.resources);
+                    startWidthResources(resources, false);
+                }else {
+                    alert("世界上最遥远的距离就是没有网~")
+                }
+            }
+
+
+            if(navigator && navigator.onLine === false) {
+                startWithOfflineResources();
+            }else {
+                $.ajax({
+                    url:'api/resources/',
+                    dataType: 'json',
+                    success: startWithOnlineResources,
+                    error: startWithOfflineResources
+                });
+            }
+
+            function insertScript(script) {
+                var node = document.createElement('script');
+                node.innerHTML = script;
+                document.head.appendChild(node);
+            }
+        })
+
+    </script>
+
+</head>
+<body>
+    <div class="load">Loading...</div>
+</body>
+</html>
